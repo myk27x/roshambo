@@ -1,57 +1,159 @@
-#  At the start of each match prompt for the name of the player
+class Game
 
-def match_init
-  puts "Hurry, the match is starting!"      # => nil
-  puts "But first... what is your name?"    # => nil
-  name = gets.chomp                         # ~> NoMethodError: undefined method `chomp' for nil:NilClass
-#  If no name is given, the program should end
-  if name == ""
-    puts "WHOOPS!"
-    exit
-  else
-    puts "Ok, #{name}, let's get started!"
+  def initialize
+    @ui_score = {:hand => 0, :bout => 0, :match => 0} ## TAKE THESE OUT OF METHOD
+    @ai_score = {:hand => 0, :bout => 0, :match => 0} ## OR WILL RESET EVERY TIME
+    @ui_point = 0
+    @ai_point = 0
+    puts "Hurry, the match is starting!"
+    puts "But first... what is your name?"
+    @name = gets.chomp
+    @counter = 0
+    if @name == ""
+      puts "No one there? Ok, bye!"
+      exit
+    else
+      puts "Ok, #{@name}, let's get started!"
+    end
   end
-end
 
-def throw_vs_ai
-  counter = 0
-  while counter < 2
-    puts counter #TESTER
-    ai_shoot = ["Rock", "Paper", "Scissors"].sample
-    puts ai_shoot #TESTER
+  # AI CHOOSE
+  def ai_choice
+    @ai_choice = [1,2,3].sample
+    if @ai_choice == 1
+      @ai_shoot = "Rock"
+    elsif @ai_choice == 2
+      @ai_shoot = "Paper"
+    elsif @ai_choice == 3
+      @ai_shoot = "Scissors"
+    end
+  end
+
+  # USER CHOOSE
+  def user_choice
     puts "press '1' for Rock, press '2' for Paper, or press '3' for Scissors."
-    user_shoot = gets.chomp
-    if user_shoot == "1"
-      user_shoot = "Rock"
-    elsif user_shoot == "2"
-      user_shoot = "Paper"
-    elsif user_shoot == "3"
-      user_shoot = "Scissors"
+    @ui_choice = gets.to_i
+    if @ui_choice == 1
+      @user_shoot = "Rock"
+    elsif @ui_choice == 2
+      @user_shoot = "Paper"
+    elsif @ui_choice == 3
+      @user_shoot = "Scissors"
     else
       puts "Do you even know how to play this game?!"
       exit
     end
-    puts "RO... SHAM... BO!"
-    puts user_shoot #TESTER
-    puts "Computer picks #{ai_shoot} and you picked #{user_shoot}."
-    if user_shoot != ai_shoot
-      counter += 1
-    else
-      puts "TIE! Go again!"
-    end
-
+    puts "Computer throws #{@ai_shoot}"
+    puts "#{@name} throws #{@user_shoot}"
   end
-  puts "WINNER!"
+
+  # HAND-BOUT-MATCH TALLY
+  def match_tally
+    ##HAND
+    if @ai_point == 1
+      @ai_score[:hand] += 1
+    elsif @ui_point == 1
+      @ui_score[:hand] += 1
+    end
+    ##BOUT
+    if @ui_score[:hand] == 2
+      puts "Bout: #{@name}!" #<=== change player to @player_name
+      # puts "Begin next bout!" #<=== call on bout? match?
+      @ui_score[:hand] = 0
+      @ui_score[:bout] += 1
+      @ai_score[:hand] = 0
+    end
+    if @ai_score[:hand] == 2
+      puts "Bout: Computer!" #<=== change player to @player_name
+      # puts "Begin next bout!" #<=== call on bout? match?
+      @ui_score[:hand] = 0
+      @ai_score[:hand] = 0
+      @ai_score[:bout] += 1
+    end
+      ##MATCH
+      if @ui_score[:bout] == 2
+        puts "Match: #{@name}!" #<=== change player to @player_name
+        # puts "Begin next bout!" #<=== call on bout? match?
+        @ui_score[:hand] = 0
+        @ui_score[:bout] = 0
+        @ui_score[:match] += 1
+        @ai_score[:hand] = 0
+        @ai_score[:bout] = 0
+      elsif @ai_score[:bout] == 2
+        puts "Match: Computer!" #<=== change player to @player_name
+        # puts "Begin next bout!" #<=== call on bout? match?
+        @ai_score[:hand] = 0
+        @ai_score[:bout] = 0
+        @ai_score[:match] += 1
+        @ui_score[:hand] = 0
+        @ui_score[:bout] = 0
+    end
+    # if @ai_score[:match] == 2
+    #   puts "'player' is the winner!"
+    #   exit
+    # elsif @ui_score[:match] == 2
+    #   puts "Computer is the winner!"
+    #   exit
+    # end
+  @ai_point = 0
+  @ui_point = 0
+  end
+
+
+  def winner
+    case
+  when @ui_choice == 1
+    if @ai_choice == 2
+      puts "Paper covers Rock! Point Computer!"
+      @ai_point += 1
+    elsif @ai_choice == 3
+      puts "Rock crushes Scirrors! Point #{@name}!"
+      @ui_point += 1
+    end
+  when @ui_choice == 2
+    if @ai_choice == 1
+      puts "Paper covers Rock! Point #{@name}!"
+      @ui_point += 1
+    elsif @ai_choice == 3
+      puts "Scissors cuts Paper! Point 'Computer!'"
+      @ai_point += 1
+    end
+  when @ui_choice == 3
+    if @ai_choice == 1
+      puts "Rock crushes Scissors! Point Computer!'"
+      @ai_point += 1
+    elsif @ai_choice == 2
+      puts "Scissors cuts Paper! Point #{@name}!"
+      @ui_point += 1
+    end
+  end
+  if @ui_choice == @ai_choice
+    puts "TIE! Go again!"
+  end
+  # puts @ai_point
+  # puts @ui_point
+  end
+
+  def bout
+    while @ui_score[:match] < 1 && @ai_score[:match] < 1
+    ai_choice
+    user_choice
+    winner
+    match_tally
+    puts "#{@name}"
+    puts "     #{@ui_score}"
+    puts "Computer"
+    puts "     #{@ai_score}"
+    end
+    if @ui_score[:match] == 2
+      puts "Game! Winner: #{@name}!"
+      exit
+    elsif @ai_score[:match] == 2
+      puts "Game! Winner: Computer!"
+      exit
+    end
+  end
 end
 
-match_init
-throw_vs_ai
-
-# >> Hurry, the match is starting!
-# >> But first... what is your name?
-
-# ~> NoMethodError
-# ~> undefined method `chomp' for nil:NilClass
-# ~>
-# ~> /Users/michaelreed/tiy/roshambo/roshambo.rb:6:in `match_init'
-# ~> /Users/michaelreed/tiy/roshambo/roshambo.rb:47:in `<main>'
+bout = Game.new
+bout.bout
