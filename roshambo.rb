@@ -8,7 +8,6 @@ class Game
     puts "Hurry, the match is starting!"
     puts "But first... what is your name?"
       @name = gets.chomp
-      @counter = 0
     if @name == ""
       puts "No one there? Ok, bye!"
       exit
@@ -167,9 +166,9 @@ class Game
 
   def play_again
     puts "//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\\\\ "
-    puts "     #{@name}  ||#{@ui_score}"
+    puts " #{@name}=====#{@ui_score}"
     puts "||-----------------------------------------------------------------------------||"
-    puts "    Computer  ||#{@ai_score}"
+    puts "  Computer=====#{@ai_score}"
     puts "\\\\=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=//"
     puts "Would you like to play again?"
     puts "Press '1' to play again or any other key to exit."
