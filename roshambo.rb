@@ -58,31 +58,27 @@ class Game
     end
     ##BOUT
     if @ui_score[:engagement] == 2
-      puts "Bout -- #{@name}!" #<=== change player to @player_name
-      # puts "Begin next bout!" #<=== call on bout? match?
+      puts "Bout -- #{@name}!"
       @ui_score[:engagement] = 0
       @ui_score[:bout] += 1
       @ai_score[:engagement] = 0
     end
     if @ai_score[:engagement] == 2
-      puts "Bout -- Computer!" #<=== change player to @player_name
-      # puts "Begin next bout!" #<=== call on bout? match?
+      puts "Bout -- Computer!"
       @ui_score[:engagement] = 0
       @ai_score[:engagement] = 0
       @ai_score[:bout] += 1
     end
       ##MATCH
       if @ui_score[:bout] == 2
-        puts "Match -- #{@name}!" #<=== change player to @player_name
-        # puts "Begin next bout!" #<=== call on bout? match?
+        puts "Match -- #{@name}!"
         @ui_score[:engagement] = 0
         @ui_score[:bout] = 0
         @ai_score[:engagement] = 0
         @ai_score[:bout] = 0
         @ui_score[:match] += 1
       elsif @ai_score[:bout] == 2
-        puts "Match -- Computer!" #<=== change player to @player_name
-        # puts "Begin next bout!" #<=== call on bout? match?
+        puts "Match -- Computer!"
         @ui_score[:engagement] = 0
         @ui_score[:bout] = 0
         @ai_score[:engagement] = 0
@@ -124,8 +120,6 @@ class Game
   if @ui_choice == @ai_choice
     puts "Engagement -- TIE! Go again!"
   end
-  # puts @ai_point  ##DEBUG
-  # puts @ui_point  ##DEBUG
   end
 
   def bout
