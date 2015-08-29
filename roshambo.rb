@@ -1,14 +1,13 @@
 class Game
 
   def initialize
-    @ui_score = {:engagement => 0, :bout => 0, :match => 0, :total_matches => 0}
-    @ai_score = {:engagement => 0, :bout => 0, :match => 0, :total_matches => 0}
-    @ui_point = 0
-    @ai_point = 0
+      @ui_score = {:engagement => 0, :bout => 0, :match => 0, :total_matches => 0}
+      @ai_score = {:engagement => 0, :bout => 0, :match => 0, :total_matches => 0}
+      @ui_point = 0
+      @ai_point = 0
     puts "Hurry, the match is starting!"
     puts "But first... what is your name?"
-    @name = gets.chomp
-    @counter = 0
+      @name = gets.chomp
     if @name == ""
       puts "No one there? Ok, bye!"
       exit
@@ -40,8 +39,8 @@ class Game
     elsif @ui_choice == 3
       @user_shoot = "Scissors"
     else
-      puts "Do you even know how to play this game?!"
-      exit
+      puts "Do you even know how to play this game?! Read the rules below..."
+      bout
     end
     puts "RO... SHAM... BO!"
     puts "Computer throws #{@ai_shoot}....."
@@ -135,22 +134,32 @@ class Game
     end
     if @ui_score[:match] == 1
       @ui_score[:match] = 0
-      @ui_score[:total_matches] = 1
+      @ui_score[:total_matches] += 1
       puts "Game! Winner: #{@name}!!!"
       message = %{
-       __    __  ____  ____   ____     ___  ____   __
-      |  |__|  ||    ||    \\ |    \\   /  _]|    \\ |  |
-      |  |  |  | |  | |  _  ||  _  | /  [_ |  D  )|  |
-      |  |  |  | |  | |  |  ||  |  ||    _]|    / |__|
-      |  `  '  | |  | |  |  ||  |  ||   [_ |    \\  __
-       \\      /  |  | |  |  ||  |  ||     ||  .  \\|  |
-        \\_/\\_/  |____||__|__||__|__||_____||__|\\_||__|
+       __      __  ______  ____    __  ____    __  _______ _______    __
+      |  |    |  ||_    _||    \\  |  ||    \\  |  ||   ____|   __  \\  |  |
+      |  |    |  |  |  |  |  |  \\ |  ||  |  \\ |  ||  |__  |  |__|  ) |  |
+      |  | /\\ |  |  |  |  |  |   \\|  ||  |   \\|  ||   __| |  |    /  |  |
+      |  \\/  \\/  |  |  |  |  | \\  |  ||  | \\  |  ||  |    |  | \\ \\   |__|
+      \\    /\\    / _|  |_ |  |  \\    ||  |  \\    ||  |____|  |  \\ \\   __
+       \\__/  \\__/ |______||__|   \\___||__|   \\___||_______|__|   \\_\\ |__|
       }
       puts message
     elsif @ai_score[:match] == 1
       @ai_score[:match] = 0
-      @ai_score[:total_matches] = 1
+      @ai_score[:total_matches] += 1
       puts "Game! Winner: Computer!"
+      message = %{
+       __         _____     _____  _______ _______    __
+      |  |      /   _  \\  /  _   \\|   ____|   __  \\  |  |
+      |  |      |  | |  ||  / |__||  |__  |  |__|  ) |  |
+      |  |      |  | |  | \\ \\____ |   __| |  | ___/  |  |
+      |  |      |  | |  | _\\____ \\|  |    |  | \\ \\   |__|
+      |  |_____ |  |_|  ||  \\___| |  |____|  |  \\ \\   __
+      |________|\\ _____/ \\_______/|_______|__|   \\_\\ |__|
+      }
+      puts message
     end
     play_again
   end
