@@ -1,8 +1,8 @@
 class Game
 
   def initialize
-    @ui_score = {:engagement => 0, :bout => 0, :match => 0, :game => 0}
-    @ai_score = {:engagement => 0, :bout => 0, :match => 0, :game => 0}
+    @ui_score = {:engagement => 0, :bout => 0, :match => 0, :total_matches => 0}
+    @ai_score = {:engagement => 0, :bout => 0, :match => 0, :total_matches => 0}
     @ui_point = 0
     @ai_point = 0
     puts "Hurry, the match is starting!"
@@ -129,7 +129,7 @@ class Game
   end
 
   def bout
-    while true
+    while @ui_score[:match] < 1 && @ai_score[:match] < 1
     ai_choice
     user_choice
     winner
@@ -141,7 +141,7 @@ class Game
     end
     if @ui_score[:match] == 1
       @ui_score[:match] = 0
-      @ui_score[:game] = 1
+      @ui_score[:total_matches] = 1
       puts "Game! Winner: #{@name}!!!"
       message = %{
        __    __  ____  ____   ____     ___  ____   __
@@ -154,14 +154,16 @@ class Game
       }
       puts message
     elsif @ai_score[:match] == 1
-      @ui_score[:match] = 0
-      @ui_score[:game] = 1
+      @ai_score[:match] = 0
+      @ai_score[:total_matches] = 1
       puts "Game! Winner: Computer!"
     end
     play_again
   end
 
   def play_again
+    puts @ui_score
+    puts @ai_score
     puts "Would you like to play again?"
     puts "Press '1' to play again or any other key to exit."
     replay = gets.to_i
@@ -174,6 +176,7 @@ class Game
       if quit == 1
         puts "Are you sure you're sure...?"
         yes = gets
+        puts "LOLOLOLOLOLOLOLOLOLOLOLOLOLOLOLOLOLOLOLOLOLOLOLOLOLOLOLOLOLOLOL"
         exit
       else
         bout
