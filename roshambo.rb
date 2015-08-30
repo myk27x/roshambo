@@ -232,6 +232,7 @@ class Game
       else
         puts "Here's our Leaderboard..."
         board
+        5.times do puts "." end
         puts "Yep! Here's your Scorecard right here!"
         give_card
       end
@@ -250,14 +251,15 @@ def new_scorecard
   ui_homedir = Dir.home ()
   Dir.chdir (ui_homedir)
   if File.exist? ("#{@user}.roshambo")
-    puts "Wait a sec... it says #{@name} right here on the Leaderboard!"
-    board
     file = File.open("#{@user}.roshambo", "r")
     @scorecard[:match_wins] = file.gets.to_i
     @scorecard[:match_losses] = file.gets.to_i
     file.close
     @ui_score[:match_wins] = @scorecard[:match_wins]
     @ui_score[:match_losses] = @scorecard[:match_losses]
+    puts "Wait a sec... it says #{@name} right here on the Leaderboard!"
+    board
+    5.times do puts "." end
     puts "This is your card right here!"
     give_card
   else
@@ -265,6 +267,7 @@ def new_scorecard
     new_player.close
     puts "Let's add you to our Leaderboard..."
     board
+    5.times do puts "." end
     puts "and here's a new Scorecard for you!"
     give_card
     puts "Oh, and don't worry if you lose it. I'll keep track of it on this computer, ok? Ok."
@@ -309,10 +312,12 @@ end
     end
 
     def board
+      @ui_leader = {:match_wins => @ui_score[:match_wins], :match_losses => @ui_score[:match_losses]}
+      @ai_leader = {:match_wins => @ai_score[:match_wins], :match_losses => @ai_score[:match_losses]}
       puts "//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\\\\ "
-      puts " #{@name}=====#{@ui_score}"
+      puts " #{@name}=====#{@ui_leader}"
       puts "||-----------------------------------------------------------------------------------||"
-      puts " Computer=====#{@ai_score}"
+      puts " Computer=====#{@ai_leader}"
       puts "\\\\=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=//"
     end
 
