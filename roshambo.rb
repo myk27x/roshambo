@@ -5,15 +5,44 @@ class Game
       @ai_score = {:engagement => 0, :bout => 0, :match => 0, :total_matches => 0}
       @ui_point = 0
       @ai_point = 0
-    puts "Hurry, the match is starting!"
-    puts "But first... what is your name?"
+    puts "Rock, paper, scissors?! Sure, we can play!"
+    puts "Wait a second... have you played before?"
+    puts "Press (1) if yes, or (2) if no."
+    played = gets.to_i
+    if played == 1
+      puts "Oh, ok, GOOD! Um... what was your name again?"
       @name = gets.chomp
-    if @name == ""
-      puts "No one there? Ok, bye!"
-      exit
+      if @name == ""
+        puts "Oh... ok... well... I don't play with people I don't know... so... bye..."
+        exit
+      else
+        puts "Right, let me see if I can find you on the Leaderboard..."
+        player_score
+        if File.exist? ("#{@user}.roshambo")
+          puts "Yep! There you are! Here's your Score Card:"
+          puts "//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\\\\ "
+          puts " #{@name}=====#{@ui_score}"
+          puts "\\\\=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=//"
+        else
+          puts "I don't see you in here..."
+          puts "Let's just start you a new sheet..."
+        end
+      end
+    elsif played == 2
+      puts "No big. It's easy. So... what's your name?"
+      @name = gets.chomp
+      if @name == ""
+        puts "Oh... ok... well... I don't play with people I don't know... so... bye..."
+        exit
+      else
+        puts "Now let me just add you to my Leaderboard..."
+        player_score
+      end
     else
-      puts "Ok, #{@name}, let's get started!"
+      puts "BZZZT! DOES NOT COMPUTE! **DIES**"
+      exit
     end
+      puts "Alright, #{@name}! Let's get started!"
   end
 
   # AI CHOOSE
@@ -122,6 +151,8 @@ class Game
   end
 
   def bout
+    p @ui_score
+    puts @ui_score
     while @ui_score[:match] < 1 && @ai_score[:match] < 1
     ai_choice
     user_choice
@@ -163,14 +194,14 @@ class Game
     end
     play_again
   end
-
+## -- add message for win/lose replay
   def play_again
     puts "//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\\\\ "
     puts " #{@name}=====#{@ui_score}"
     puts "||-----------------------------------------------------------------------------||"
-    puts "  Computer=====#{@ai_score}"
+    puts " Computer=====#{@ai_score}"
     puts "\\\\=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=//"
-    puts "Would you like to play again?"
+    puts "How about another match?"
     puts "Press '1' to play again or any other key to exit."
     replay = gets.to_i
     if replay == 1
@@ -180,16 +211,46 @@ class Game
       puts "Press '1' to exit or any other key to play again."
       quit = gets.to_i
       if quit == 1
-        puts "Are you sure you're sure...?"
-        yes = gets
+        puts "Are you sure you're sure you're sure???"
+        gets
         puts "LOLOLOLOLOLOLOLOLOLOLOLOLOLOLOLOLOLOLOLOLOLOLOLOLOLOLOLOLOLOLOL"
+        ui_score_update
         exit
       else
         bout
       end
     end
   end
+
+  def player_score
+    @user = @name.to_sym
+
+    if File.exist? ("#{@user}.roshambo")
+      @ui_score = File.read("#{@user}.roshambo")
+      if @ui_score.empty?
+        puts "empty"
+        @ui_score = {:engagement => 0, :bout => 0, :match => 0, :total_matches => 0}
+      end
+    else
+      new_player = File.new("#{@user}.roshambo", "w+")
+      new_player.close
+    end
+  end
+
+  def ui_score_update
+    puts "Oh, wait, before you go..."
+    puts "Let's update your stats to our leaderboard..."
+    puts "Here's your updated Score Card:"
+    puts "//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\\\\ "
+    puts " #{@name}=====#{@ui_score}"
+    puts "\\\\=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=//"
+    File.open("#{@user}.roshambo", "w") { |file| file.write("#{@ui_score}") }
+  end
 end
 
 bout = Game.new
 bout.bout
+
+## CHANGE LOG ##
+# -- notified what game you're playing
+# -- modified messages
