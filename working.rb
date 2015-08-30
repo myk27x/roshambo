@@ -1,12 +1,14 @@
 class Game
 
   def initialize
-      @ui_score = {:engagement => 0, :bout => 0, :match => 0, :total_matches => 0}
-      @ai_score = {:engagement => 0, :bout => 0, :match => 0, :total_matches => 0}
+      @ui_score = {:engagement => 0, :bout => 0, :match => 0, :match_wins => 0, :match_losses => 0}
+      @ai_score = {:engagement => 0, :bout => 0, :match => 0, :match_wins => 0, :match_losses => 0}
+      @scorecard = {:match_wins => 0, :match_losses => 0}
       @ui_point = 0
       @ai_point = 0
+      comp_stats
     puts "Rock, paper, scissors?! Sure, we can play!"
-    puts "Wait a second... have you played before?"
+    puts "Whoops... hang on a sec... have you registered on our Leaderboard?"
     puts "Press (1) if yes, or (2) if no."
     played = gets.to_i
     if played == 1
@@ -16,17 +18,8 @@ class Game
         puts "Oh... ok... well... I don't play with people I don't know... so... bye..."
         exit
       else
-        puts "Right, let me see if I can find you on the Leaderboard..."
-        player_score
-        if File.exist? ("#{@user}.roshambo")
-          puts "Yep! There you are! Here's your Score Card:"
-          puts "//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\\\\ "
-          puts " #{@name}=====#{@ui_score}"
-          puts "\\\\=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=//"
-        else
-          puts "I don't see you in here..."
-          puts "Let's just start you a new sheet..."
-        end
+        puts "Right, let me see if I can find your Scorecard..."
+        player_scorecard
       end
     elsif played == 2
       puts "No big. It's easy. So... what's your name?"
@@ -36,7 +29,7 @@ class Game
         exit
       else
         puts "Now let me just add you to my Leaderboard..."
-        player_score
+        new_scorecard
       end
     else
       puts "BZZZT! DOES NOT COMPUTE! **DIES**"
@@ -151,21 +144,21 @@ class Game
   end
 
   def bout
-    p @ui_score
-    puts @ui_score
     while @ui_score[:match] < 1 && @ai_score[:match] < 1
     ai_choice
     user_choice
     winner
     match_tally
-    puts "#{@name}:"
+    print "#{@name}:"
     puts "     <<#{@ui_score}>>"
-    puts "Computer:"
+    print "Computer:"
     puts "     <<#{@ai_score}>>"
     end
     if @ui_score[:match] == 1
       @ui_score[:match] = 0
-      @ui_score[:total_matches] += 1
+      @ui_score[:match_wins] += 1
+      @scorecard[:match_wins] += 1
+      @ai_score[:match_losses] += 1
       puts "Game! Winner: #{@name}!!!"
       message = %{
        __      __  ______  ____    __  ____    __  _______ _______    __
@@ -179,7 +172,9 @@ class Game
       puts message
     elsif @ai_score[:match] == 1
       @ai_score[:match] = 0
-      @ai_score[:total_matches] += 1
+      @ai_score[:match_wins] += 1
+      @scorecard[:match_losses] += 1
+      @ui_score[:match_losses] += 1
       puts "Game! Winner: Computer!"
       message = %{
        __         _____     _____  _______ _______    __
@@ -196,11 +191,7 @@ class Game
   end
 ## -- add message for win/lose replay
   def play_again
-    puts "//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\\\\ "
-    puts " #{@name}=====#{@ui_score}"
-    puts "||-----------------------------------------------------------------------------||"
-    puts " Computer=====#{@ai_score}"
-    puts "\\\\=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=//"
+    board
     puts "How about another match?"
     puts "Press '1' to play again or any other key to exit."
     replay = gets.to_i
@@ -214,7 +205,7 @@ class Game
         puts "Are you sure you're sure you're sure???"
         gets
         puts "LOLOLOLOLOLOLOLOLOLOLOLOLOLOLOLOLOLOLOLOLOLOLOLOLOLOLOLOLOLOLOL"
-        ui_score_update
+        scorecard_update
         exit
       else
         bout
@@ -222,30 +213,109 @@ class Game
     end
   end
 
-  def player_score
-    @user = @name.to_sym
-
+  def player_scorecard
+    @user = @name
+    ui_homedir = Dir.home ()
+    Dir.chdir (ui_homedir)
     if File.exist? ("#{@user}.roshambo")
-      @ui_score = File.read("#{@user}.roshambo")
-      if @ui_score.empty?
-        puts "empty"
-        @ui_score = {:engagement => 0, :bout => 0, :match => 0, :total_matches => 0}
+      # READING FROM FILE
+      file = File.open("#{@user}.roshambo", "r")
+      @scorecard[:match_wins] = file.gets.to_i
+      @scorecard[:match_losses] = file.gets.to_i
+      file.close
+      @ui_score[:match_wins] = @scorecard[:match_wins]
+      @ui_score[:match_losses] = @scorecard[:match_losses]
+      if @scorecard[:match_wins] == nil # WHOLE IF STATEMENT REDUNDANT???
+        puts "I don't see you in here..."
+        puts "Let's just start you a new Scorecard..."
+        @scorecard = {:match_wins => 0, :match_losses => 0}
+      else
+        puts "Here's our Leaderboard..."
+        board
+        puts "Yep! Here's your Scorecard right here!"
+        give_card
       end
     else
+      puts "I don't see you in here..."
+      puts "Let's just start you a new Scorecard..."
       new_player = File.new("#{@user}.roshambo", "w+")
       new_player.close
+      puts "Here's your new Scorecard... (try not to lose it again!)"
+      give_card
     end
   end
 
-  def ui_score_update
+def new_scorecard
+  @user = @name
+  ui_homedir = Dir.home ()
+  Dir.chdir (ui_homedir)
+  if File.exist? ("#{@user}.roshambo")
+    puts "Wait a sec... it says #{@name} right here on the Leaderboard!"
+    board
+    file = File.open("#{@user}.roshambo", "r")
+    @scorecard[:match_wins] = file.gets.to_i
+    @scorecard[:match_losses] = file.gets.to_i
+    file.close
+    @ui_score[:match_wins] = @scorecard[:match_wins]
+    @ui_score[:match_losses] = @scorecard[:match_losses]
+    puts "This is your card right here!"
+    give_card
+  else
+    new_player = File.new("#{@user}.roshambo", "w+")
+    new_player.close
+    puts "Let's add you to our Leaderboard..."
+    board
+    puts "and here's a new Scorecard for you!"
+    give_card
+    puts "Oh, and don't worry if you lose it. I'll keep track of it on this computer, ok? Ok."
+  end
+
+end
+
+  def scorecard_update
+    compfile = File.open("comp_stats.roshambo", "w")
+    compfile.puts @ai_score[:match_wins]
+    compfile.puts @ai_score[:match_losses]
+    compfile.close
     puts "Oh, wait, before you go..."
     puts "Let's update your stats to our leaderboard..."
-    puts "Here's your updated Score Card:"
-    puts "//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\\\\ "
-    puts " #{@name}=====#{@ui_score}"
-    puts "\\\\=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=//"
-    File.open("#{@user}.roshambo", "w") { |file| file.write("#{@ui_score}") }
+    puts "Here's your updated Scorecard:"
+    give_card
+    # WRITING TO FILE
+    file = File.open("#{@user}.roshambo", "w")
+    file.puts @scorecard[:match_wins]
+    file.puts @scorecard[:match_losses]
+    file.close
   end
+
+    def give_card
+      puts "//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\\\\ "
+      puts " #{@name}=====#{@scorecard}"
+      puts "\\\\=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-==-=-=-//"
+    end
+
+    def comp_stats
+      ui_homedir = Dir.home ()
+      Dir.chdir (ui_homedir)
+      if File.exist? ("comp_stats.roshambo")
+        file = File.open("comp_stats.roshambo", "r")
+        @ai_score[:match_wins] = file.gets.to_i
+        @ai_score[:match_losses] = file.gets.to_i
+        file.close
+      else
+        new_comp = File.new("comp_stats.roshambo", "w+")
+        new_comp.close
+      end
+    end
+
+    def board
+      puts "//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\\\\ "
+      puts " #{@name}=====#{@ui_score}"
+      puts "||-----------------------------------------------------------------------------------||"
+      puts " Computer=====#{@ai_score}"
+      puts "\\\\=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=//"
+    end
+
 end
 
 bout = Game.new
