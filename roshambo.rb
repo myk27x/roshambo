@@ -1,3 +1,5 @@
+## FINALE VERSION OF EPICLY EPIC ROSHAMBO!!! ##
+
 class Game
   def initialize
     @ui_score = {:engagement => 0, :bout => 0, :match => 0, :match_wins => 0, :match_losses => 0}
