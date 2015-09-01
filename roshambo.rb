@@ -42,6 +42,34 @@ class Game
     puts "Alright, #{@name}! Let's get started!"
   end
 
+# Allows player option of ai vs rando when wins are 10 more than rando/comp
+# WORKINGHERE
+  def which_ai
+    if @ui_score[:match_wins] > @ai_score[:match_wins] + 5
+      puts "Hmm... according to our Leaderboard, you're actually pretty good..."
+      puts "Would you like to try... HARD MODE?"
+      puts "Type (1) for HARD MODE, or any other key for Regular Mode."
+      @which_ai = gets.to_i
+      if @which_ai == 1
+        puts "HARD MODE ENGAGED! TURNING KNOB TO '11'!"
+      end
+    end
+  end
+
+
+# Random AI for beginners
+  def rando_choice
+    @ai_choice = [1,2,3].sample
+    if @ai_choice == 1
+      @ai_shoot = "Rock"
+    elsif @ai_choice == 2
+      @ai_shoot = "Paper"
+    elsif @ai_choice == 3
+      @ai_shoot = "Scissors"
+    end
+  end
+
+
 # Random only if tie. Otherwise follows logic in accordance with
 # link to 'advanced Roshambo AI'.
   def ai_choice
@@ -200,8 +228,13 @@ class Game
 
 # Main method for running/looping game.
   def bout
+    which_ai
     while @ui_score[:match] < 1 && @ai_score[:match] < 1
-      ai_choice
+      if @which_ai == 1
+        ai_choice
+      else
+        rando_choice
+      end
       user_choice
       winner
       match_tally
